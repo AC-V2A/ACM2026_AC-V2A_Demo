@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AC-V2A Generation — Audio Demo</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+       background: #f8f9fa; color: #333; line-height: 1.6; }
+.container { max-width: 960px; margin: 0 auto; padding: 20px; }
+h1 { font-size: 1.8em; color: #2c3e50; text-align: center; margin: 30px 0 8px; }
+.subtitle { text-align: center; color: #777; margin-bottom: 30px; }
+.tab-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
+            position: sticky; top: 0; background: #f8f9fa; padding: 12px 0; z-index: 10; }
+.tab { padding: 10px 24px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;
+        font-weight: 600; font-size: 0.9em; background: #fff; transition: all 0.2s; }
+.tab:hover { border-color: #3498db; }
+.tab.active { background: #3498db; color: #fff; border-color: #3498db; }
+.section { display: none; }
+.section.active { display: block; }
+.section-title { font-size: 1.3em; font-weight: 700; color: #2c3e50; margin-bottom: 6px; }
+.section-desc { font-size: 0.9em; color: #666; margin-bottom: 20px; line-height: 1.5; }
+.sample-card { background: #fff; border-radius: 12px; padding: 20px; margin-bottom: 16px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.sample-header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; flex-wrap: wrap; }
+.sample-num { font-weight: 700; font-size: 1.05em; color: #2c3e50; }
+.category { background: #eef2f7; padding: 3px 10px; border-radius: 6px; font-size: 0.85em; color: #555; }
+.cos-sim { margin-left: auto; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 0.85em;
+            color: #e67e22; font-weight: 600; background: #fef5e7; padding: 3px 10px; border-radius: 6px; }
+.audio-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.audio-item { }
+.audio-item .label { font-weight: 600; font-size: 0.85em; color: #555; margin-bottom: 6px; }
+.audio-item audio { width: 100%; height: 40px; }
+.video-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.video-item { text-align: center; }
+.video-item .label { font-weight: 700; font-size: 1em; margin-bottom: 8px; padding: 4px 0; border-radius: 6px; }
+.model-ours { color: #27ae60; background: #eafaf1; }
+.model-acf { color: #e74c3c; background: #fdedec; }
+.video-item video { width: 100%; border-radius: 8px; border: 1px solid #e0e0e0; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Audio-Conditioned Video-to-Audio Generation</h1>
+  <p class="subtitle">Listening Demo — Selected Samples</p>
+
+  <div class="tab-bar">
+    <div class="tab active" onclick="showSection('a')">Section A: Timbre Distinction</div>
+    <div class="tab" onclick="showSection('b')">Section B: Timbre Similarity</div>
+    <div class="tab" onclick="showSection('c')">Section C: Model Comparison</div>
+  </div>
+
+  <div class="section active" id="sec_a">
+    <div class="section-title">Section A: Timbre Distinction</div>
+    <div class="section-desc">
+      Two audio samples generated with different timbre conditioning. The cosine similarity (cos_sim) between their timbre embeddings is shown.
+      Lower cos_sim indicates greater timbre difference.
+    </div>
+    
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#1</span>
+        <span class="category">bird chirping, tweeting</span>
+        <span class="cos-sim">cos_sim = 0.6251</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_0oOoqxsMkXs_000020_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_0oOoqxsMkXs_000020_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#2</span>
+        <span class="category">missile launch</span>
+        <span class="cos-sim">cos_sim = 0.6358</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_8eBRwOfaNwc_000074_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_8eBRwOfaNwc_000074_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#3</span>
+        <span class="category">playing hockey</span>
+        <span class="cos-sim">cos_sim = 0.6560</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_5Ck5yrhxM-k_000102_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_5Ck5yrhxM-k_000102_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#4</span>
+        <span class="category">car engine knocking</span>
+        <span class="cos-sim">cos_sim = 0.6644</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_6lzWYtq5fTg_000061_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_6lzWYtq5fTg_000061_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#5</span>
+        <span class="category">splashing water</span>
+        <span class="cos-sim">cos_sim = 0.6832</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_1TNP5EgCDME_000041_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_1TNP5EgCDME_000041_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#6</span>
+        <span class="category">female singing</span>
+        <span class="cos-sim">cos_sim = 0.6869</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_4r8kZF_CRSk_000030_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_4r8kZF_CRSk_000030_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#7</span>
+        <span class="category">motorboat, speedboat acceleration</span>
+        <span class="cos-sim">cos_sim = 0.6899</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_-9KfxCfZg_4_000000_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_-9KfxCfZg_4_000000_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#8</span>
+        <span class="category">car engine starting</span>
+        <span class="cos-sim">cos_sim = 0.6958</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_0RVcHYwq_kI_000030_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_0RVcHYwq_kI_000030_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#9</span>
+        <span class="category">train whistling</span>
+        <span class="cos-sim">cos_sim = 0.7061</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_71zRGF67ui4_000035_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_71zRGF67ui4_000035_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#10</span>
+        <span class="category">rope skipping</span>
+        <span class="cos-sim">cos_sim = 0.7182</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_3-vsnQ2AAXE_000173_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_3-vsnQ2AAXE_000173_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#11</span>
+        <span class="category">playing electric guitar</span>
+        <span class="cos-sim">cos_sim = 0.7351</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_ArCaYopoZG4_000080_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_ArCaYopoZG4_000080_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#12</span>
+        <span class="category">playing synthesizer</span>
+        <span class="cos-sim">cos_sim = 0.7490</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_9TWpxJ-sPnA_000120_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_9TWpxJ-sPnA_000120_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#13</span>
+        <span class="category">female singing</span>
+        <span class="cos-sim">cos_sim = 0.7681</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_67ZK_mwj150_000030_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_67ZK_mwj150_000030_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#14</span>
+        <span class="category">wind noise</span>
+        <span class="cos-sim">cos_sim = 0.7714</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_10s8Y6nK_6M_000008_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_10s8Y6nK_6M_000008_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#15</span>
+        <span class="category">arc welding</span>
+        <span class="cos-sim">cos_sim = 0.7799</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Audio A</div>
+          <audio controls preload="none"><source src="audio/a_2pJ-w_tZySY_000265_a.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Audio B</div>
+          <audio controls preload="none"><source src="audio/a_2pJ-w_tZySY_000265_b.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec_b">
+    <div class="section-title">Section B: Timbre Similarity</div>
+    <div class="section-desc">
+      Compare the generated Target Audio with the Reference Audio used for timbre conditioning.
+      Higher cos_sim indicates the generated audio better preserves the reference timbre.
+    </div>
+    
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#1</span>
+        <span class="category">fox barking</span>
+        <span class="cos-sim">cos_sim = 0.8019</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_hT6tQx3MFvA_000080_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_hT6tQx3MFvA_000080_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#2</span>
+        <span class="category">spraying water</span>
+        <span class="cos-sim">cos_sim = 0.8107</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_d2Cy7iaZimY_000070_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_d2Cy7iaZimY_000070_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#3</span>
+        <span class="category">people humming</span>
+        <span class="cos-sim">cos_sim = 0.8117</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_pGFNuEN3PFU_000124_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_pGFNuEN3PFU_000124_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#4</span>
+        <span class="category">vacuum cleaner cleaning floors</span>
+        <span class="cos-sim">cos_sim = 0.8152</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_r3Tq5Noreu4_000053_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_r3Tq5Noreu4_000053_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#5</span>
+        <span class="category">underwater bubbling</span>
+        <span class="cos-sim">cos_sim = 0.8271</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_es-qqel-Fhc_000034_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_es-qqel-Fhc_000034_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#6</span>
+        <span class="category">dog whimpering</span>
+        <span class="cos-sim">cos_sim = 0.8332</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_Ax4prAbYhUg_000030_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_Ax4prAbYhUg_000030_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#7</span>
+        <span class="category">car passing by</span>
+        <span class="cos-sim">cos_sim = 0.8406</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_jKCKs_6Y7e0_000030_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_jKCKs_6Y7e0_000030_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#8</span>
+        <span class="category">child singing</span>
+        <span class="cos-sim">cos_sim = 0.8515</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_3GHaSY8vO-8_000030_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_3GHaSY8vO-8_000030_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#9</span>
+        <span class="category">cat growling</span>
+        <span class="cos-sim">cos_sim = 0.8590</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_gpaX15tTUoc_000017_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_gpaX15tTUoc_000017_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#10</span>
+        <span class="category">ferret dooking</span>
+        <span class="cos-sim">cos_sim = 0.8661</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_O6ckBNch69U_000048_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_O6ckBNch69U_000048_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#11</span>
+        <span class="category">playing double bass</span>
+        <span class="cos-sim">cos_sim = 0.8732</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_aa0Zd7yWzYc_000140_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_aa0Zd7yWzYc_000140_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#12</span>
+        <span class="category">baby crying</span>
+        <span class="cos-sim">cos_sim = 0.8757</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_8mU1Q6ffIqg_000023_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_8mU1Q6ffIqg_000023_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#13</span>
+        <span class="category">people hiccup</span>
+        <span class="cos-sim">cos_sim = 0.8879</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_7QGHSMVGBTo_000340_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_7QGHSMVGBTo_000340_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#14</span>
+        <span class="category">dog baying</span>
+        <span class="cos-sim">cos_sim = 0.8899</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_3z52z_mtR8U_000260_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_3z52z_mtR8U_000260_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#15</span>
+        <span class="category">baby laughter</span>
+        <span class="cos-sim">cos_sim = 0.9100</span>
+      </div>
+      <div class="audio-pair">
+        <div class="audio-item">
+          <div class="label">Target Audio</div>
+          <audio controls preload="none"><source src="audio/b_At9Gz9uHgJc_000000_target.wav" type="audio/wav"></audio>
+        </div>
+        <div class="audio-item">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none"><source src="audio/b_At9Gz9uHgJc_000000_ref.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="sec_c">
+    <div class="section-title">Section C: Model Comparison</div>
+    <div class="section-desc">
+      Direct comparison between our model (<strong style="color:#27ae60">AC-V2A (Ours)</strong>) and
+      <strong style="color:#e74c3c">AC-Foley</strong>.
+      Each sample shows the reference audio and videos generated by each model.
+    </div>
+    
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#1</span>
+        <span class="category">playing guiro</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_74j6uEsqh4M_000130.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_74j6uEsqh4M_000130.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_74j6uEsqh4M_000130.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#2</span>
+        <span class="category">lathe spinning</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_mSL8MpANRBE_000013.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_mSL8MpANRBE_000013.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_mSL8MpANRBE_000013.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#3</span>
+        <span class="category">cap gun shooting</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_l6HsxUNdkd4_000010.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_l6HsxUNdkd4_000010.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_l6HsxUNdkd4_000010.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#4</span>
+        <span class="category">dog howling</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_3LvZUtupOCs_000030.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_3LvZUtupOCs_000030.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_3LvZUtupOCs_000030.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#5</span>
+        <span class="category">playing french horn</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_bu2JMRlDl94_000150.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_bu2JMRlDl94_000150.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_bu2JMRlDl94_000150.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#6</span>
+        <span class="category">splashing water</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_kY5sWKso__o_000160.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_kY5sWKso__o_000160.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_kY5sWKso__o_000160.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#7</span>
+        <span class="category">elephant trumpeting</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_qrZAB7XymYU_000022.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_qrZAB7XymYU_000022.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_qrZAB7XymYU_000022.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#8</span>
+        <span class="category">subway, metro, underground</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_lQNWx4KRlz0_000450.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_lQNWx4KRlz0_000450.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_lQNWx4KRlz0_000450.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#9</span>
+        <span class="category">playing shofar</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_3h1-zP8M-yU_000020.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_3h1-zP8M-yU_000020.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_3h1-zP8M-yU_000020.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#10</span>
+        <span class="category">mouse pattering</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_UAj7kZaBQ3I_000030.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_UAj7kZaBQ3I_000030.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_UAj7kZaBQ3I_000030.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#11</span>
+        <span class="category">goose honking</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_HtnBcjEudhY_000300.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_HtnBcjEudhY_000300.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_HtnBcjEudhY_000300.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#12</span>
+        <span class="category">strike lighter</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_szZJa2XhkMM_000034.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_szZJa2XhkMM_000034.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_szZJa2XhkMM_000034.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#13</span>
+        <span class="category">playing hockey</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_k0F_Z8quZ98_000940.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_k0F_Z8quZ98_000940.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_k0F_Z8quZ98_000940.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#14</span>
+        <span class="category">eagle screaming</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_qbwMJW5rmG4_000608.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_qbwMJW5rmG4_000608.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_qbwMJW5rmG4_000608.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+    <div class="sample-card">
+      <div class="sample-header">
+        <span class="sample-num">#15</span>
+        <span class="category">hedge trimmer running</span>
+      </div>
+      <div class="audio-pair" style="margin-bottom:12px">
+        <div class="audio-item" style="flex:1">
+          <div class="label">Reference Audio</div>
+          <audio controls preload="none" style="width:100%"><source src="audio/ref_BbLHZJoHXdU_000123.wav" type="audio/wav"></audio>
+        </div>
+      </div>
+      <div class="video-pair">
+        <div class="video-item">
+          <div class="label model-ours">AC-V2A (Ours)</div>
+          <video controls preload="none"><source src="video/v3_BbLHZJoHXdU_000123.mp4" type="video/mp4"></video>
+        </div>
+        <div class="video-item">
+          <div class="label model-acf">AC-Foley</div>
+          <video controls preload="none"><source src="video/acf_BbLHZJoHXdU_000123.mp4" type="video/mp4"></video>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function showSection(s) {
+  document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('sec_' + s).classList.add('active');
+  document.querySelectorAll('.tab')[{'a':0,'b':1,'c':2}[s]].classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
